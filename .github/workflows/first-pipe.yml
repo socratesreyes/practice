@@ -1,0 +1,17 @@
+name: My Learning Pipeline
+
+# This tells GitHub WHEN to run the file (on every push)
+on: [push]
+
+jobs:
+  say-hello:
+    # This tells GitHub what kind of cloud server to spin up
+    runs-on: ubuntu-latest
+
+    # These are the actual steps the server will execute
+    steps:
+      - name: Check out the repository code
+        uses: actions/checkout@v4
+
+      - name: Print a welcome message
+        run: echo "Hello World! My DevOps pipeline is working perfectly!"
