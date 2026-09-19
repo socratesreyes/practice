@@ -1,0 +1,15 @@
+name: Stage 1 CI Gate
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Tests
+        run: echo "Simulating tests... This should ONLY run on PRs to main!"

@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Git Custom Push",
+            "type": "shell",
+            "command": "git add . && git commit -m '${input:commitMessage}' && git push",
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "commitMessage",
+            "type": "promptString",
+            "description": "Enter your commit message:",
+            "default": "updates"
+        }
+    ]
+}
