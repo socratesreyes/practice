@@ -1,0 +1,40 @@
+name: Broken Production Pipeline
+
+on:
+  push:
+    branches: main
+  workflow_dispatch
+
+jobs:
+  compile-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Create Artifact
+        run: |
+          mkdir out
+          echo "Version 1.2.3" > out/app.bin
+
+      - name: Save Application
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build
+          path: out/app.bin
+
+  deploy-staging:
+    runs-on: ubuntu-latest
+    need: compile-code
+    
+    steps:
+      - name: Get App
+        uses: actions/download-artifact@v4
+        with:
+          name: app-build
+          path: current-release/
+
+      - name: Push to Cloud
+        run: |
+          echo "Deploying using password: ${{ MY_SECRET_PASSWORD }}"
+          echo "Deployment successful!"
