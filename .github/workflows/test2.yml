@@ -2,7 +2,7 @@ name: Stage 1 CI Gate
 on:
   push:
     branches:
-      - main
+      - vs-code
   pull_request:
 
 jobs:
