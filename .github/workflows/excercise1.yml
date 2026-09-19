@@ -2,8 +2,7 @@ name: Broken Production Pipeline
 
 on:
   push:
-    branches: main
-  workflow_dispatch
+    branches: [vs-code]
 
 jobs:
   compile-code:
@@ -25,8 +24,8 @@ jobs:
 
   deploy-staging:
     runs-on: ubuntu-latest
-    need: compile-code
-    
+    needs: compile-code
+
     steps:
       - name: Get App
         uses: actions/download-artifact@v4
@@ -35,6 +34,7 @@ jobs:
           path: current-release/
 
       - name: Push to Cloud
+
         run: |
-          echo "Deploying using password: ${{ MY_SECRET_PASSWORD }}"
+          echo "Deploying using password: ${{ secrets.MY_SECRET_PASSWORD }}"
           echo "Deployment successful!"
