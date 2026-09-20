@@ -1,8 +1,9 @@
 name: Broken Production Pipeline
 
 on:
-  push:
-    branches: [vs-code]
+  workflow_dispatch:
+  #push:
+  #  branches: [vs-code]
 
 jobs:
   compile-code:
@@ -34,7 +35,13 @@ jobs:
           path: current-release/
 
       - name: Push to Cloud
-
+        env:
+          DEPLOY_PASSWORD: ${{ vars.MY_SECRET_PASSWORD }}
         run: |
-          echo "Deploying using password: ${{ secrets.MY_SECRET_PASSWORD }}"
+          if [ -z "$DEPLOY_PASSWORD" ]; then
+            echo "Deployment password is not configured."
+            exit 1
+          fi
+
+          echo "Deploying to cloud..."
           echo "Deployment successful!"
