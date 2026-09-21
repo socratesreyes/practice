@@ -3,7 +3,6 @@ name: Python-API-merge-main-branch
 on:
   pull_request:
     branches: [vs-code]
-  workflow_dispatch:
 
 jobs:
   run-python-tests:
