@@ -2,7 +2,7 @@ name: Python-API-merge-main-branch
 
 on:
   pull_request:
-    branches: [main]
+    branches: [vs-code]
   workflow_dispatch:
 
 jobs:
