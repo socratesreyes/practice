@@ -1,7 +1,7 @@
 name: Python-API-merge-main-branch
 
 on:
-  pull_request:
+  push:
     branches: [vs-code]
 
 jobs:
