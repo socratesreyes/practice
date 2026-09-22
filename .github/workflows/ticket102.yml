@@ -1,0 +1,33 @@
+name: ticket-102-python-tests
+# Trigger Upgrade: Runs on push to main AND allows manual trigger from the GitHub UI
+on:
+  push:
+    branches: [vs-code]
+  workflow_dispatch:
+# Environment Injection: Global variable available to all jobs
+env:
+  APP_ENV: staging
+
+jobs:
+  run-python-tests:
+    runs-on: ubuntu-latest
+    # Matrix Upgrade: Configures parallel runners for Python 3.10, 3.11, and 3.12
+    strategy:
+      matrix:
+        python-version: [3.10, 3.11, 3.12]
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # Step 2: Dynamically set up the Python version from the matrix
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Step 3: Secrets Injection & Test Simulation
+      - name: Run multi-version test suite
+        run: |
+          echo "Running tests in $APP_ENV with key ${{ secrets.API_TEST_KEY }}"
