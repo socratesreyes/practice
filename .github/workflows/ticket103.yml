@@ -1,0 +1,51 @@
+name: ticket-103-decouple-pipeline
+# Trigger Upgrade: Runs on push to main branch and allows manual UI trigger
+on:
+  push:
+    branches: [vs-code]
+  workflow_dispatch:
+
+env:
+  APP_ENV: staging
+
+jobs:
+  # Job 1: Compiles and builds the static application file once
+  build-app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # Simulate compiling a static application file
+      - name: Generate static application build
+        run: |
+          mkdir release
+          echo "Stable Build v2.0" > release/app.bin
+
+      # Securely upload the folder as a pipeline artifact
+      - name: Upload production binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-binary
+          path: release/
+
+  # Job 2: Pulls down the compiled app and packages it into a production-ready environment
+  package-image:
+    runs-on: ubuntu-latest
+    # Job Dependency: Strictly waits for the build-app job to complete successfully
+    needs: build-app
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # Download the exact artifact built in Job 1
+      - name: Download production binary
+        uses: actions/download-artifact@v4
+        with:
+          name: production-binary
+
+      # Simulate Docker build stage by verifying the file handoff
+      - name: Build and Package Docker Image
+        run: |
+          cat release/app.bin
+          echo "Building Docker image: my-python-api:latest..."
