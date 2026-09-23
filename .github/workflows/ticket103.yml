@@ -43,6 +43,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: production-binary
+          path: release/
 
       # Simulate Docker build stage by verifying the file handoff
       - name: Build and Package Docker Image
