@@ -1,0 +1,75 @@
+#============================================================================
+# LAYER 1: METADATA & IDENTITY
+# ==============================================================================
+name: Enterprise CI-CD Pipeline
+run-name: Build triggered by ${{ github.actor }} on branch ${{ github.ref_name }}
+
+# ==============================================================================
+# LAYER 2: THE TRIGGER BLOCK (AUTOMATION CONTROLS)
+# ==============================================================================
+on:
+  push:
+    branches: [ main, "feature/*" ]     # 🚀 Run if code hits main or feature branches
+    paths-ignore:                       # 🚫 Do NOT run if only documentation changed
+      - '**.md'
+  pull_request:
+    branches: [ main ]                  # 👥 Run tests when a developer requests a merge
+  workflow_dispatch:                    # 🔘 Enables the manual "Play" button in GitHub UI
+
+# ==============================================================================
+# LAYER 3: GLOBAL CONFIGURATIONS & SECURITY
+# ==============================================================================
+permissions:                            # 🛡️ Least Privilege Security Principle
+  contents: read                        # Allow runner to read code, deny write access
+  packages: write                       # Allow runner to publish Docker images
+
+env:                                    # 🌍 Global Environment Variables
+  IMAGE_NAME: my-app-service
+  ENVIRONMENT: staging
+
+# ==============================================================================
+# LAYER 4: THE JOBS HIERARCHY
+# ==============================================================================
+jobs:
+  
+  # JOB 1: VALIDATION STAGE
+  validate-and-test:
+    runs-on: ubuntu-latest              # ☁️ The Virtual Machine OS Target
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]       # 🔀 Matrix: Multiplies this job into 2 parallel runs
+      fail-fast: true                   # ⚡ If version 18 fails, cancel version 20 immediately
+    
+    steps:
+      - name: Fetch Source Code
+        uses: actions/checkout@v4       # 📥 Clone code onto the blank VM
+
+      - name: Initialize Runtime Runtime
+        uses: actions/setup-node@v4     # ⚙️ Install Node.js
+        with:
+          node-version: ${{ matrix.node-version }} # 🪟 Context Expression injection
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4          # ⚡ Optimization: Saves time on package downloads
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Execute Test Automation
+        run: npm ci && npm test         # 🐚 Sequential Shell Execution
+
+  # JOB 2: PACKAGING STAGE (DEPENDENT ON JOB 1)
+  build-and-ship:
+    runs-on: ubuntu-latest
+    needs: validate-and-test            # 🔗 Job Dependency: Only runs if testing turns green!
+    environment: staging                # 🏢 Environment Rules (e.g. requires Lead Dev approval)
+    
+    steps:
+      - name: Fetch Source Code
+        uses: actions/checkout@v4
+
+      - name: Inject Secure Secrets
+        run: |                          # 🔑 Passing hidden tokens into application steps
+          echo "Connecting to database..."
+          echo "Secret Token is: ${{ secrets.DATABASE_PASSWORD }}" 
+Use code with caution.

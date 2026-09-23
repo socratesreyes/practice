@@ -1,4 +1,4 @@
-name: Python-API-merge-main-branch
+name: ticket-101-python-tests
 
 on:
   push:
