@@ -1,0 +1,60 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+  workflow_dispatch:
+
+env:
+  APP_ENV: staging
+
+jobs:
+  build-app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # Performance Optimization: Cache pip dependencies
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Build Application
+        run: |
+          mkdir -p release
+          echo "Simulated Binary Data" > release/app.bin
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-binary
+          path: release/app.bin
+
+  package-image:
+    runs-on: ubuntu-latest
+    needs: build-app
+    # Enterprise Environment Isolation
+    environment: staging
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # Fixed Download Path Strategy
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-binary
+          path: release/
+
+      - name: Run cat and Docker Simulation
+        run: |
+          cat release/app.bin
+          echo "Building Docker image: my-python-api:latest..."
